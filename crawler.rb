@@ -3,6 +3,9 @@ require 'pry'
 require 'twilio-ruby'
 
 class Crawler
+  def initialize
+    @sender = SmsSender.new
+  end
 
   SUBSCRIBED = [
     "https://www.adidas.pl/spodnie-tiro/IM2899.html",
@@ -43,7 +46,9 @@ class Crawler
       links << link.href
     end
     if !links.empty?
-      SmsSender.new.send_sms(links.join("\n"))
+      @sender.send_sms(links.join("\n"))
+    else
+      @sender.send_sms("Brak nowych spodni na adidas.pl")
     end
     b.close
   end

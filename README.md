@@ -13,7 +13,14 @@ Running following script will output links to products that are either:
 3. url contains a keyword that is ignored
 
 ```bash
+bundle install
 bundle exec ruby crawler.rb
+```
+
+Alternatively you can use docker
+```
+docker build -t adidas-scraper .
+docker run -it adidas-scraper
 ```
 
 

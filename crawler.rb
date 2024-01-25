@@ -21,7 +21,7 @@ class Crawler
     "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7918.html",
     "https://www.adidas.pl/techfit-3-stripes-training-short-tights/HD3531.html",
     "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7919.html",
-    # "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html",
+    "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html",
   ]
 
   IGNORED_KEYWORDS = %w( terrex legginsy )

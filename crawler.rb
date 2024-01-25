@@ -1,5 +1,6 @@
 require 'watir'
 require 'pry'
+require 'twilio-ruby'
 
 class Crawler
 
@@ -27,6 +28,7 @@ class Crawler
   IGNORED_KEYWORDS = %w( terrex legginsy )
 
   def start
+    links = []
     b = Watir::Browser.new :firefox, headless: true
 
     b.goto("https://www.adidas.pl/mezczyzni-odziez-spodnie?v_size_pl_pl=mt%7Clt")
@@ -38,6 +40,10 @@ class Crawler
     b.links(class: "glass-product-card__assets-link").each do |link|
       next if skip?(link.href)
       puts link.href
+      links << link.href
+    end
+    if !links.empty?
+      SmsSender.new.send_sms(links.join("\n"))
     end
     b.close
   end
@@ -53,6 +59,24 @@ class Crawler
       end
     end
     return false
+  end
+end
+
+class SmsSender
+  def initialize
+    @account_sid = ENV['TWILIO_ACCOUNT_SID']
+    @auth_token = ENV['TWILIO_AUTH_TOKEN']
+    @twillio_phone_number = ENV['TWILIO_PHONE_NUMBER']
+    @destination_number = ENV['DESTINATION_NUMBER']
+    @client = Twilio::REST::Client.new(@account_sid, @auth_token)
+  end
+
+  def send_sms(message)
+    @client.messages.create(
+      from: @twillio_phone_number,
+      to: @destination_number,
+      body: message
+    )
   end
 end
 

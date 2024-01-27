@@ -19,8 +19,8 @@ bundle exec ruby crawler.rb
 
 Alternatively you can use docker
 ```
-docker build -t adidas-scraper .
-docker run -it adidas-scraper
+docker build -f Dockerfile -t adidas-scraper .
+docker run -it --env-file=.env adidas-scraper
 ```
 
 

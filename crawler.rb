@@ -48,7 +48,7 @@ class Crawler
     if !links.empty?
       @sender.send_sms(links.join("\n"))
     else
-      @sender.send_sms("Brak nowych spodni na adidas.pl")
+      # nothing to save twillio credit
     end
     b.close
   end

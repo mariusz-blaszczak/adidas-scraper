@@ -47,8 +47,9 @@ class Crawler
     end
     if !links.empty?
       @sender.send_sms(links.join("\n"))
+      puts links.join("\n")
     else
-      # nothing to save twillio credit
+      puts "No links found"
     end
     b.close
   end

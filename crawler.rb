@@ -7,6 +7,10 @@ class Crawler
     @sender = SmsSender.new
   end
 
+  ORDERED = [
+    "https://www.adidas.pl/spodnie-adicolor-classics-adibreak/IM8219.html"
+  ]
+
   SUBSCRIBED = [
     "https://www.adidas.pl/spodnie-tiro/IM2899.html",
     "https://www.adidas.pl/spodnie-tiro/IM2899.html",
@@ -26,6 +30,7 @@ class Crawler
     "https://www.adidas.pl/techfit-3-stripes-training-short-tights/HD3531.html",
     "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7919.html",
     "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html",
+    "https://www.adidas.pl/essentials-fleece-regular-tapered-pants/IJ8892.html", # cotton
   ]
 
   IGNORED_KEYWORDS = %w( terrex legginsy )
@@ -47,7 +52,6 @@ class Crawler
     end
     if !links.empty?
       @sender.send_sms(links.join("\n"))
-      puts links.join("\n")
     else
       puts "No links found"
     end
@@ -55,7 +59,10 @@ class Crawler
   end
 
   def skip?(href)
-    NOT_INTERESTED.include?(href) || SUBSCRIBED.include?(href) || skip_by_keyword?(href)
+    NOT_INTERESTED.include?(href) ||
+      SUBSCRIBED.include?(href) ||
+      ORDERED.include?(href) ||
+      skip_by_keyword?(href)
   end
 
   def skip_by_keyword?(href)
@@ -78,6 +85,8 @@ class SmsSender
   end
 
   def send_sms(message)
+    return if ENV['TWILIO_DISABLED'] == 'true'
+
     @client.messages.create(
       from: @twillio_phone_number,
       to: @destination_number,

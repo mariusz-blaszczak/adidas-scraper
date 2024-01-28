@@ -1,64 +1,99 @@
 require 'watir'
 require 'pry'
 require 'twilio-ruby'
+require 'uri'
 
 class Crawler
+  attr_reader :b
+
   def initialize
     @sender = SmsSender.new
+    @b = Watir::Browser.new :firefox, headless: true
   end
 
   ORDERED = [
     "https://www.adidas.pl/spodnie-adicolor-classics-adibreak/IM8219.html"
   ]
 
-  SUBSCRIBED = [
-    "https://www.adidas.pl/spodnie-tiro/IM2899.html",
-    "https://www.adidas.pl/spodnie-tiro/IM2899.html",
+  SUBSCRIBED = %w[
+    https://www.adidas.pl/spodnie-tiro/IM2899.html
+    https://www.adidas.pl/spodnie-tiro/IM2899.html
   ]
 
-  NOT_INTERESTED = [
-    "https://www.adidas.pl/rain.rdy-golf-pants/HK7447.html",
-    "https://www.adidas.pl/rain.rdy-golf-pants/HI3463.html",
-    "https://www.adidas.pl/spodnie-rain.rdy-golf/HZ5941.html",
-    "https://www.adidas.pl/future-icons-badge-of-sport-pants/IC3759.html",
-    "https://www.adidas.pl/essentials-single-jersey-tapered-elasticized-cuff-logo-pants/IC0056.html",
-    "https://www.adidas.pl/spodnie-tiro/IM2900.html",
-    "https://www.adidas.pl/spodnie-tiro/IS1522.html",
-    "https://www.adidas.pl/techfit-aeroready-training-long-tights/HM6061.html",
-    "https://www.adidas.pl/techfit-training-short-tights/HJ9921.html",
-    "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7918.html",
-    "https://www.adidas.pl/techfit-3-stripes-training-short-tights/HD3531.html",
-    "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7919.html",
-    "https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html",
-    "https://www.adidas.pl/essentials-fleece-regular-tapered-pants/IJ8892.html", # cotton
+  NOT_INTERESTED = %w[
+    https://www.adidas.pl/rain.rdy-golf-pants/HK7447.html
+    https://www.adidas.pl/rain.rdy-golf-pants/HI3463.html
+    https://www.adidas.pl/spodnie-rain.rdy-golf/HZ5941.html
+    https://www.adidas.pl/future-icons-badge-of-sport-pants/IC3759.html
+    https://www.adidas.pl/essentials-single-jersey-tapered-elasticized-cuff-logo-pants/IC0056.html
+    https://www.adidas.pl/spodnie-tiro/IM2900.html
+    https://www.adidas.pl/spodnie-tiro/IS1522.html
+    https://www.adidas.pl/techfit-aeroready-training-long-tights/HM6061.html
+    https://www.adidas.pl/techfit-training-short-tights/HJ9921.html
+    https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7918.html
+    https://www.adidas.pl/techfit-3-stripes-training-short-tights/HD3531.html
+    https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7919.html
+    https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html
+    https://www.adidas.pl/essentials-fleece-regular-tapered-pants/IJ8892.html
   ]
 
   IGNORED_KEYWORDS = %w( terrex legginsy )
 
+  SIZES = %w[
+    lt
+    lt2
+    lt3
+    mt
+    mt2
+    mt3
+  ]
+
+  URLS = %w[
+    https://www.adidas.pl/mezczyzni-odziez-spodnie
+  ]
+
   def start
     links = []
-    b = Watir::Browser.new :firefox, headless: true
-
-    b.goto("https://www.adidas.pl/mezczyzni-odziez-spodnie?v_size_pl_pl=mt%7Clt")
-
-    if b.text.include? "Zaakkceptuj monitorowanie"
-      b.span(text: "Zaakceptuj monitorowanie").click
+    URLS.each do |url|
+      sizes = URI.encode_www_form_component(SIZES.join("|"))
+      url = "#{url}?v_size_pl_pl=#{sizes}"
+      puts url
+      open_url(url)
+      accept_monitoring
+      links << collect_links
     end
 
-    b.links(class: "glass-product-card__assets-link").each do |link|
-      next if skip?(link.href)
-      puts link.href
-      links << link.href
-    end
+    links = links.flatten.uniq
+
     if !links.empty?
       @sender.send_sms(links.join("\n"))
+      puts links.join("\n")
     else
       puts "No links found"
     end
+
     b.close
   end
 
+  def open_url(url)
+    b.goto(url)
+  end
+
+  def accept_monitoring
+    if b.text.include? "Zaakkceptuj monitorowanie"
+      b.span(text: "Zaakceptuj monitorowanie").click
+    end
+  end
+
+  def collect_links
+    b.links(class: "glass-product-card__assets-link").map do |link|
+      next if skip?(link.href)
+      link.href
+    end.compact
+  end
+
   def skip?(href)
+    href = href.split("?")[0]
     NOT_INTERESTED.include?(href) ||
       SUBSCRIBED.include?(href) ||
       ORDERED.include?(href) ||

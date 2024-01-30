@@ -35,6 +35,7 @@ class Crawler
     https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IN7919.html
     https://www.adidas.pl/spodnie-designed-for-training-yoga-training-7-8/IU4604.html
     https://www.adidas.pl/essentials-fleece-regular-tapered-pants/IJ8892.html
+    https://www.adidas.pl/spodnie-adicolor-classics-adibreak/IM8223.html
   ]
 
   IGNORED_KEYWORDS = %w( terrex legginsy )

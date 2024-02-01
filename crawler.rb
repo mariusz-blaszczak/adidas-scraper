@@ -37,6 +37,12 @@ class Crawler
     https://www.adidas.pl/essentials-fleece-regular-tapered-pants/IJ8892.html
     https://www.adidas.pl/spodnie-adicolor-classics-adibreak/IM8223.html
     https://www.adidas.pl/essentials-french-terry-tapered-elastic-cuff-3-stripes-pants/IC0050.html
+    https://www.adidas.pl/terrex-multi-knit-tracksuit-bottoms/IN0019.html
+    https://www.adidas.pl/mt-knit-pants/IB1123.html
+    https://www.adidas.pl/mt-knit-pants/IN0019.html
+    https://www.adidas.pl/spodnie-essentials-fleece-3-stripes-tapered-cuff/IJ6494.html
+    https://www.adidas.pl/spodnie-essentials-fleece-3-stripes-tapered-cuff/IJ6493.html
+    https://www.adidas.pl/spodnie-essentials-fleece-3-stripes-tapered-cuff/IB4030.html
   ]
 
   IGNORED_KEYWORDS = %w( terrex legginsy )

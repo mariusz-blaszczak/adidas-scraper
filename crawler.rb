@@ -18,6 +18,7 @@ class Crawler
   SUBSCRIBED = %w[
     https://www.adidas.pl/spodnie-tiro/IM2899.html
     https://www.adidas.pl/spodnie-tiro/IM2899.html
+    https://www.adidas.pl/tiro-23-league-pants/HS7232.html
   ]
 
   NOT_INTERESTED = %w[
